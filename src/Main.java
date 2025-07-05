@@ -12,87 +12,93 @@ public class Main {
         String filePath = "src/hangman.txt";
         ArrayList<String> words = new ArrayList<>();
 
-        try(BufferedReader reader = new BufferedReader(new FileReader(filePath))){
 
-            String line;
-            while ((line = reader.readLine()) != null){
 
-                words.add(line.trim());
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
 
+                String line;
+                while ((line = reader.readLine()) != null) {
+
+                    words.add(line.trim());
+
+                }
+
+            } catch (FileNotFoundException e) {
+                System.out.println("Could not find the file");
+
+            } catch (IOException e) {
+                System.out.println("Something went wrong");
             }
+            Scanner scanner = new Scanner(System.in);
+            Random random = new Random();
+            String playAgain= "";
 
-        }
-        catch (FileNotFoundException e){
-            System.out.println("Could not find the file");
+            do{
 
-        }
-        catch (IOException e){
-            System.out.println("Something went wrong");
-        }
+            String word = words.get(random.nextInt(words.size()));
 
-        Random random = new Random();
+            ArrayList<Character> wordState = new ArrayList<>();
+            int wrongGuesses = 0;
 
-        String word = words.get(random.nextInt(words.size()));
-
-
-
-        Scanner scanner = new Scanner(System.in);
-
-        ArrayList<Character> wordState = new ArrayList<>();
-        int wrongGuesses= 0;
-
-        for(int i = 0; i< word.length(); i++){
-            wordState.add('_');
-        }
-        System.out.println("*************************");
-        System.out.println(" Welcome to Java Hangman!");
-        System.out.println("*************************");
-
-        while (wrongGuesses < 6){
-
-            System.out.print(getHangmanArt(wrongGuesses));
-
-            System.out.println("Word: ");
-
-            for(char c : wordState){
-                System.out.print(c + " ");
+            for (int i = 0; i < word.length(); i++) {
+                wordState.add('_');
             }
-            System.out.println();
+            System.out.println("*************************");
+            System.out.println(" Welcome to Java Hangman!");
+            System.out.println("*************************");
 
-            System.out.print("Guess a letter: ");
-            char guess = scanner.next().toLowerCase().charAt(0);
 
-            if(word.indexOf(guess) >= 0){
-                System.out.println("Correct guess!");
+            while (wrongGuesses < 6) {
 
-                for(int i = 0; i < word.length(); i++){
-                    if(word.charAt(i) == guess){
-                        wordState.set(i, guess);
+                System.out.print(getHangmanArt(wrongGuesses));
+
+                System.out.println("Word: ");
+
+                for (char c : wordState) {
+                    System.out.print(c + " ");
+                }
+                System.out.println();
+
+                System.out.print("Guess a letter: ");
+                char guess = scanner.next().toLowerCase().charAt(0);
+
+                if (word.indexOf(guess) >= 0) {
+                    System.out.println("Correct guess!");
+
+                    for (int i = 0; i < word.length(); i++) {
+                        if (word.charAt(i) == guess) {
+                            wordState.set(i, guess);
+                        }
+
                     }
 
+                    if (!wordState.contains('_')) {
+                        System.out.println(getHangmanArt(wrongGuesses));
+                        System.out.println("You Win!!!");
+                        System.out.printf("You found the word: %s\n", word);
+                        scanner.nextLine(); // test
+                        break;
+                    }
+
+
+                } else {
+                    wrongGuesses++;
+                    System.out.println("Wrong guess!");
                 }
-
-                if(!wordState.contains('_')){
-                    System.out.println(getHangmanArt(wrongGuesses));
-                    System.out.println("You Win!!!");
-                    System.out.printf("You found the word: %s\n", word);
-                    break;
-                }
-
-
-
             }
-            else {
-                wrongGuesses++;
-                System.out.println("Wrong guess!");
-            }
-        }
 
-        if(wrongGuesses >= 6){
-            System.out.println(getHangmanArt(wrongGuesses));
-            System.out.println("Game Over!!");
-            System.out.println("The word was: " + word);
-        }
+            if (wrongGuesses >= 6) {
+                System.out.println(getHangmanArt(wrongGuesses));
+                System.out.println("Game Over!!");
+                System.out.println("The word was: " + word);
+                scanner.nextLine();
+            }
+            System.out.print("Wanna play again? (Y/N): ");
+            playAgain = scanner.nextLine().toUpperCase();
+
+        } while (playAgain.equals("Y"));
+
+        System.out.println("Thanks for playing, see you next time");
 
         scanner.close();
     }
